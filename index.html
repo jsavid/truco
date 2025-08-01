@@ -5,89 +5,118 @@
   <title>Marcador de Truco</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f8f8f8;
-      text-align: center;
+      font-family: 'Georgia', serif;
+      background: #f2e6d9 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+      background-size: cover;
+      margin: 0;
       padding: 2rem;
+      text-align: center;
+      color: #3e2f1c;
     }
 
     h1 {
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
+      font-size: 2.5rem;
     }
 
     .scoreboard {
       display: flex;
-      justify-content: space-around;
-      margin-top: 2rem;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
     }
 
     .team {
-      background: white;
-      border: 2px solid #444;
-      border-radius: 10px;
-      padding: 1rem;
-      width: 200px;
+      background: #fffbe6;
+      border: 3px solid #3e2f1c;
+      border-radius: 15px;
+      padding: 1.5rem;
+      width: 280px;
+      box-shadow: 4px 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .team input {
+      font-size: 1.4rem;
+      text-align: center;
+      border: none;
+      background: transparent;
+      border-bottom: 2px solid #3e2f1c;
+      margin-bottom: 1rem;
+      font-weight: bold;
     }
 
     .sticks {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      margin-top: 1rem;
-      min-height: 100px;
+      gap: 10px;
+      min-height: 120px;
+      margin-bottom: 1rem;
     }
 
     .stick-group {
       position: relative;
-      width: 40px;
-      height: 60px;
-      margin: 5px;
+      width: 50px;
+      height: 50px;
     }
 
     .stick {
+      position: absolute;
+      background: #000;
       width: 4px;
       height: 40px;
-      background: #000;
-      position: absolute;
-      bottom: 0;
       transform-origin: bottom;
     }
 
-    .stick:nth-child(1) { left: 2px; }
-    .stick:nth-child(2) { left: 10px; }
-    .stick:nth-child(3) { left: 18px; }
-    .stick:nth-child(4) { left: 26px; }
+    /* Cuatro palitos formando un cuadrado */
+    .v1 { top: 5px; left: 8px; }
+    .v2 { top: 5px; left: 36px; }
+    .h1 { top: 5px; left: 8px; transform: rotate(90deg); }
+    .h2 { bottom: 5px; left: 8px; transform: rotate(90deg); }
+
     .diagonal {
+      position: absolute;
+      top: 6px;
+      left: 6px;
       width: 4px;
       height: 60px;
       background: #000;
-      position: absolute;
-      transform: rotate(-45deg);
-      top: 0;
-      left: 0;
+      transform: rotate(45deg);
       transform-origin: top left;
     }
 
     .controls button {
+      background: #d4a373;
+      border: none;
+      padding: 0.6rem 1rem;
       margin: 0.25rem;
-      padding: 0.5rem 1rem;
       font-size: 1rem;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background: #b5835a;
     }
   </style>
 </head>
 <body>
   <h1>Marcador de Truco</h1>
   <div class="scoreboard">
-    <div class="team" id="team1">
-      <h2>Equipo 1</h2>
+    <div class="team">
+      <input type="text" id="name1" value="Equipo 1" onchange="updateName(1)">
       <div class="sticks" id="sticks1"></div>
       <div class="controls">
         <button onclick="addPoint(1)">+1</button>
         <button onclick="removePoint(1)">-1</button>
       </div>
     </div>
-    <div class="team" id="team2">
-      <h2>Equipo 2</h2>
+
+    <div class="team">
+      <input type="text" id="name2" value="Equipo 2" onchange="updateName(2)">
       <div class="sticks" id="sticks2"></div>
       <div class="controls">
         <button onclick="addPoint(2)">+1</button>
@@ -109,23 +138,24 @@
       for (let i = 0; i < fullGroups; i++) {
         const group = document.createElement("div");
         group.className = "stick-group";
-        for (let j = 0; j < 4; j++) {
-          const stick = document.createElement("div");
-          stick.className = "stick";
-          group.appendChild(stick);
-        }
-        const diagonal = document.createElement("div");
-        diagonal.className = "diagonal";
-        group.appendChild(diagonal);
+        group.innerHTML = `
+          <div class="stick v1"></div>
+          <div class="stick v2"></div>
+          <div class="stick h1"></div>
+          <div class="stick h2"></div>
+          <div class="diagonal"></div>
+        `;
         container.appendChild(group);
       }
 
       if (remainder > 0) {
         const group = document.createElement("div");
         group.className = "stick-group";
+
+        const stickMap = ['v1', 'v2', 'h1', 'h2'];
         for (let j = 0; j < remainder; j++) {
           const stick = document.createElement("div");
-          stick.className = "stick";
+          stick.className = `stick ${stickMap[j]}`;
           group.appendChild(stick);
         }
         container.appendChild(group);
@@ -144,6 +174,11 @@
         scores[teamId - 1]--;
         renderSticks(teamId);
       }
+    }
+
+    function updateName(teamId) {
+      const input = document.getElementById(`name${teamId}`);
+      // Aquí podrías guardar nombres si querés usar localStorage
     }
 
     renderSticks(1);
